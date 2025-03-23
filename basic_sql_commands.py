@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def show_tables(cursor):
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
@@ -6,15 +9,19 @@ def show_tables(cursor):
         print(table[0])
 
 
-def view_table(cursor, table_name):
+def view_table(cursor, table_name, max_rows=10, max_columns=None):
     cursor.execute(f"SELECT * FROM {table_name};")
 
+    #gets all rows and column names
     rows = cursor.fetchall()
-
     column_names = [description[0] for description in cursor.description]
-    print("Columns:", column_names)
 
-    # Print rows
+    df = pd.DataFrame(rows, columns=column_names)
+
+    # Configure pandas display options
+    pd.set_option("display.max_rows", max_rows)  # Limit the number of rows displayed
+    if max_columns:
+        pd.set_option("display.max_columns", max_columns)  # Limit the number of columns displayed
+
     print(f"Contents of table '{table_name}':")
-    for row in rows:
-        print(row)
+    print(df)
