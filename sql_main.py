@@ -7,12 +7,16 @@ cursor = connection.cursor()
 
 show_tables(cursor)
 
-view_table(cursor, "FoodItem")
+cursor.execute("DROP TABLE IF EXISTS FoodItem;")
 
-
+show_tables(cursor)
 
 # created the SQL Table
-#cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
+cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
+
+show_tables(cursor)
+
+view_table(cursor, "FoodItem")
 
 connection.close()
 
