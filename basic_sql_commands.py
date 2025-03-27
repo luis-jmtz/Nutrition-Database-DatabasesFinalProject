@@ -10,18 +10,23 @@ def show_tables(cursor):
 
 
 def view_table(cursor, table_name, max_rows=10, max_columns=None):
-    cursor.execute(f"SELECT * FROM {table_name};")
+    
+    
+    try:        
+        cursor.execute(f"SELECT * FROM {table_name};")
 
-    #gets all rows and column names
-    rows = cursor.fetchall()
-    column_names = [description[0] for description in cursor.description]
+        #gets all rows and column names
+        rows = cursor.fetchall()
+        column_names = [description[0] for description in cursor.description]
 
-    df = pd.DataFrame(rows, columns=column_names)
+        df = pd.DataFrame(rows, columns=column_names)
 
-    # Configure pandas display options
-    pd.set_option("display.max_rows", max_rows)  # Limit the number of rows displayed
-    if max_columns:
-        pd.set_option("display.max_columns", max_columns)  # Limit the number of columns displayed
+        # Configure pandas display options
+        pd.set_option("display.max_rows", max_rows)  # Limit the number of rows displayed
+        if max_columns:
+            pd.set_option("display.max_columns", max_columns)  # Limit the number of columns displayed
 
-    print(f"Contents of table '{table_name}':")
-    print(df)
+        print(f"Contents of table '{table_name}':")
+        print(df)
+    except:
+        print(f"'{table_name}' could not be printed. Check that table exists and that the name is spelled correctly")
