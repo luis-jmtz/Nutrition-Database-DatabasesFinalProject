@@ -1,3 +1,14 @@
+CREATE TABLE RecipeIngredients(
+    recipeID INTEGER,
+    ingredientID INTEGER,
+    ingredientQuantity DECIMAL,
+    FOREIGN KEY (recipeID) REFERENCES Recipes(recipeID),
+    FOREIGN KEY (ingredientID) REFERENCES IngredientItem(ingredientID)
+);
+
+
+
+/*
 CREATE TABLE UserFavoriteIngredients(
     userID INTEGER,
     ingredientID INTEGER,
@@ -16,21 +27,14 @@ CREATE TABLE UserFavoriteRecipes(
 );
 
 
-/*
+
 CREATE TABLE Recipes (
     recipeID INTEGER PRIMARY KEY,
     recipeName VARCHAR(50) NOT NULL,
     recipeDescription VARCHAR(500) NOT NULL
 );
 
-CREATE TABLE RecipeIngredients(
-    recipeID INTEGER,
-    ingredientID INTEGER,
-    ingredientQuantity INTEGER,
-    FOREIGN KEY (recipeID) REFERENCES Recipes(recipeID),
-    FOREIGN KEY (ingredientID) REFERENCES IngredientItem(ingredientID)
-    
-);
+
 
 CREATE TABLE Users(
     userID INTEGER PRIMARY KEY,
