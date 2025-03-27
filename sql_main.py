@@ -9,8 +9,8 @@ cursor = connection.cursor()
 #cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
 
 
-show_tables(cursor)
-view_table(cursor, "IngredientItem")
+# show_tables(cursor)
+view_table(cursor, "Recipes")
 
 
 connection.close()
