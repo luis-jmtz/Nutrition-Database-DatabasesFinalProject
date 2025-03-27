@@ -1,3 +1,22 @@
+CREATE TABLE UserFavoriteIngredients(
+    userID INTEGER,
+    ingredientID INTEGER,
+    savedDate DATE,
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (ingredientID) REFERENCES IngredientItem(ingredientID)   
+);
+
+
+CREATE TABLE UserFavoriteRecipes(
+    userID INTEGER,
+    recipeID INTEGER,
+    savedDate DATE,
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (recipeID) REFERENCES Recipes(recipeID) 
+);
+
+
+/*
 CREATE TABLE Recipes (
     recipeID INTEGER PRIMARY KEY,
     recipeName VARCHAR(50) NOT NULL,
@@ -13,7 +32,6 @@ CREATE TABLE RecipeIngredients(
     
 );
 
-
 CREATE TABLE Users(
     userID INTEGER PRIMARY KEY,
     userName VARCHAR(50) NOT NULL,
@@ -21,9 +39,6 @@ CREATE TABLE Users(
 );
 
 
-
-
-/*
 CREATE TABLE IngredientItem (
     ingredientID INTEGER PRIMARY KEY,
     ingredientName VARCHAR(50) NOT NULL,
