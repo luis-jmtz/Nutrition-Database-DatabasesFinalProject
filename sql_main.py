@@ -10,7 +10,7 @@ cursor = connection.cursor()
 
 
 show_tables(cursor)
-view_table(cursor, "RecipeIngredients")
+view_table(cursor, "IngredientItem")
 
 
 connection.close()
