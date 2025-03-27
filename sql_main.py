@@ -7,19 +7,12 @@ cursor = connection.cursor()
 
 show_tables(cursor)
 
-# view_table(cursor, "IngredientItem")
+view_table(cursor, "IngredientItem")
 
 
 
 # created the SQL Table
 # cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
-
-# drop table 
-connection.execute("DROP TABLE IngredientItem")
-
-connection.execute("DROP TABLE FoodItem")
-
-show_tables(cursor)
 
 
 connection.close()
