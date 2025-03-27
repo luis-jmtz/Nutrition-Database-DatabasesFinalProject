@@ -6,9 +6,7 @@ connection = sqlite3.connect("nutrition.db")
 cursor = connection.cursor()
 
 show_tables(cursor)
-view_table(cursor, "UserFavoriteIngredients")
-
-view_table(cursor, "UserFavoriteRecipes")
+view_table(cursor, "Users")
 
 # created the SQL Table
 # cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
