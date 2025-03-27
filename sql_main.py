@@ -8,9 +8,8 @@ cursor = connection.cursor()
 # created the SQL Table
 #cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
 
-
 # show_tables(cursor)
-view_table(cursor, "Recipes")
+view_table(cursor, "RecipeIngredients")
 
 
 connection.close()
