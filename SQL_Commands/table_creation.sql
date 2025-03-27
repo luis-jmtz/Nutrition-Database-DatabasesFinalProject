@@ -1,5 +1,5 @@
 CREATE TABLE IngredientItem (
-    ingredientID INT PRIMARY KEY,
+    ingredientID INTEGER PRIMARY KEY,
     ingredientName VARCHAR(50) NOT NULL,
     Calories_per_100g DECIMAL(5, 2) NOT NULL,
     Fat_g DECIMAL(5, 2),

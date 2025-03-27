@@ -15,7 +15,7 @@ for csv_file in csv_files:
     df.columns = df.columns.str.replace(" ", "")
 
     df = df.rename(columns={
-        "food": "FoodName",  # Map "food" to "FoodName"
+        "food": "ingredientName",
         "CaloricValue": "Calories_per_100g",
         "Fat": "Fat_g",
         "SaturatedFats": "SaturatedFats_g",
@@ -53,9 +53,9 @@ for csv_file in csv_files:
     })
 
     # Insert data into the FoodItem table
-    df.to_sql("FoodItem", connection, if_exists="append", index=False)
+    df.to_sql("IngredientItem", connection, if_exists="append", index=False)
 
 connection.commit()
 connection.close()
 
-print("Data insertion complete!")
+print("Data insertion complete")
