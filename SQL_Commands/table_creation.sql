@@ -1,3 +1,29 @@
+CREATE TABLE Recipes (
+    recipeID INTEGER PRIMARY KEY,
+    recipeName VARCHAR(50) NOT NULL,
+    recipeDescription VARCHAR(500) NOT NULL
+);
+
+CREATE TABLE RecipeIngredients(
+    recipeID INTEGER,
+    ingredientID INTEGER,
+    ingredientQuantity INTEGER,
+    FOREIGN KEY (recipeID) REFERENCES Recipes(recipeID),
+    FOREIGN KEY (ingredientID) REFERENCES IngredientItem(ingredientID)
+    
+);
+
+
+CREATE TABLE Users(
+    userID INTEGER PRIMARY KEY,
+    userName VARCHAR(50) NOT NULL,
+    userPassword VARCHAR(20) NOT NULL
+);
+
+
+
+
+/*
 CREATE TABLE IngredientItem (
     ingredientID INTEGER PRIMARY KEY,
     ingredientName VARCHAR(50) NOT NULL,
@@ -36,3 +62,4 @@ CREATE TABLE IngredientItem (
     Zinc_mg DECIMAL(5, 2),
     NutritionDensity DECIMAL(5, 2)
 );
+*/
