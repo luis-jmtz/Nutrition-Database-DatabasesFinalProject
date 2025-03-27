@@ -8,6 +8,7 @@ cursor = connection.cursor()
 show_tables(cursor)
 
 
+
 # created the SQL Table
 # cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
 

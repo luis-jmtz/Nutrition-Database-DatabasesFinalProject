@@ -11,7 +11,6 @@ def show_tables(cursor):
 
 def view_table(cursor, table_name, max_rows=10, max_columns=None):
     
-    
     try:        
         cursor.execute(f"SELECT * FROM {table_name};")
 
