@@ -1,3 +1,5 @@
+/*
+
 CREATE TABLE RecipeIngredients(
     recipeID INTEGER,
     ingredientID INTEGER,
@@ -7,8 +9,6 @@ CREATE TABLE RecipeIngredients(
 );
 
 
-
-/*
 CREATE TABLE UserFavoriteIngredients(
     userID INTEGER,
     ingredientID INTEGER,
