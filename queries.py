@@ -1,0 +1,27 @@
+import pandas as pd
+import sqlite3
+
+
+def query_ingredients_by_calories(cursor, min_calories, max_calories):
+
+    try:
+        # SQL Query
+        query = f"""
+        SELECT ingredientID, ingredientName, Calories_per_100g
+        FROM IngredientItem
+        WHERE Calories_per_100g BETWEEN {min_calories} AND {max_calories}
+        """
+
+        cursor.execute(query)
+
+        #gets results and column names
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+
+        df = pd.DataFrame(rows, columns= columns)
+        return df
+    
+    except Exception as e:
+        print(f"Error querying ingredients: {str(e)}")
+
+        return None
