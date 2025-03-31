@@ -11,8 +11,8 @@ cursor = connection.cursor()
 # show_tables(cursor)
 # view_table(cursor, "RecipeIngredients")
 
-show_tables(cursor)
-view_table(cursor, "UserFavoriteRecipes")
+# show_tables(cursor)
+# view_table(cursor, "UserFavoriteRecipes")
 
 connection.close()
 

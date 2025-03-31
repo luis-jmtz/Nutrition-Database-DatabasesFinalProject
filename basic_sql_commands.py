@@ -29,3 +29,9 @@ def view_table(cursor, table_name, max_rows=10, max_columns=None):
         print(df)
     except:
         print(f"'{table_name}' could not be printed. Check that table exists and that the name is spelled correctly")
+
+def print_df(dataframe, max_rows = 10, max_columns = None):
+    
+    with pd.option_context('display.max_rows', max_rows,
+                            'display.max_columns', max_columns):
+        print(dataframe)
