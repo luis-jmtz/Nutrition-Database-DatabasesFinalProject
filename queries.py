@@ -57,3 +57,21 @@ def query_ingredients_by_NutritionDensity(cursor, min_density, max_density):
         print(f"Error querying ingredients: {str(e)}")
 
         return None
+
+
+def query_recipes_by_ingredient(cursor, ingredient_id):
+    try:
+        query = f"""
+        SELECT RecipeIngredients.recipeID, Recipes.recipeName, RecipeIngredients.ingredientQuantity
+        FROM RecipeIngredients
+        JOIN Recipes ON RecipeIngredients.recipeID = Recipes.recipeID
+        WHERE RecipeIngredients.ingredientID = {ingredient_id}
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        return pd.DataFrame(rows, columns=columns)
+    
+    except Exception as e:
+        print(f"Error querying recipes: {str(e)}")
+        return None
