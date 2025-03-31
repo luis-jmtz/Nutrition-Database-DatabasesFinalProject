@@ -2,6 +2,13 @@ import pandas as pd
 import sqlite3
 
 
+def print_df(dataframe, max_rows = 10, max_columns = None):
+    
+    with pd.option_context('display.max_rows', max_rows,
+                            'display.max_columns', max_columns):
+        print(dataframe)
+
+
 def query_ingredients_by_calories(cursor, min_calories, max_calories):
 
     try:

@@ -1,5 +1,6 @@
 import sqlite3
 from basic_sql_commands import show_tables, view_table
+from queries import query_ingredients_by_calories, print_df
 
 connection = sqlite3.connect("nutrition.db")
 
@@ -13,6 +14,10 @@ cursor = connection.cursor()
 
 # show_tables(cursor)
 # view_table(cursor, "UserFavoriteRecipes")
+
+q1 = query_ingredients_by_calories(cursor, 50, 100)
+print_df(q1)
+
 
 connection.close()
 
