@@ -110,3 +110,25 @@ def query_user_favorite_recipes(cursor, user_id):
     except Exception as e:
         print(f"Error querying favorite recipes: {str(e)}")
         return None
+    
+    
+def calculate_recipe_nutrition(cursor, recipe_id):
+    try:
+        query = f"""
+        SELECT 
+            SUM(IngredientItem.Calories_per_100g * RecipeIngredients.ingredientQuantity / 100) as TotalCalories,
+            SUM(IngredientItem.Protein_g * RecipeIngredients.ingredientQuantity / 100) as TotalProtein,
+            SUM(IngredientItem.Carbohydrates_g * RecipeIngredients.ingredientQuantity / 100) as TotalCarbs,
+            SUM(IngredientItem.Fat_g * RecipeIngredients.ingredientQuantity / 100) as TotalFat
+        FROM RecipeIngredients
+        JOIN IngredientItem ON RecipeIngredients.ingredientID = IngredientItem.ingredientID
+        WHERE RecipeIngredients.recipeID = {recipe_id}
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        df = pd.DataFrame(rows, columns=columns)
+        return df
+    except Exception as e:
+        print(f"Error calculating nutrition: {str(e)}")
+        return None
