@@ -75,3 +75,38 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
     except Exception as e:
         print(f"Error querying recipes: {str(e)}")
         return None
+
+
+def query_user_favorite_ingredients(cursor, user_id):
+
+    try:
+        query = f"""
+        SELECT UserFavoriteIngredients.ingredientID, IngredientItem.ingredientName
+        FROM UserFavoriteIngredients
+        JOIN IngredientItem ON UserFavoriteIngredients.ingredientID = IngredientItem.ingredientID
+        WHERE UserFavoriteIngredients.userID = {user_id}
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        return pd.DataFrame(rows, columns=columns)
+    except Exception as e:
+        print(f"Error querying favorite ingredients: {str(e)}")
+        return None
+
+def query_user_favorite_recipes(cursor, user_id):
+
+    try:
+        query = f"""
+        SELECT UserFavoriteRecipes.recipeID, Recipes.recipeName
+        FROM UserFavoriteRecipes
+        JOIN Recipes ON UserFavoriteRecipes.recipeID = Recipes.recipeID
+        WHERE UserFavoriteRecipes.userID = {user_id}
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        return pd.DataFrame(rows, columns=columns)
+    except Exception as e:
+        print(f"Error querying favorite recipes: {str(e)}")
+        return None
