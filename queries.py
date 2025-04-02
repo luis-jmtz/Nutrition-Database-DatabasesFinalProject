@@ -10,21 +10,27 @@ def print_view(cursor, view_name, max_rows=10, max_columns=None):
         print(pd.DataFrame(rows, columns=columns))
 
 
-def query_ingredients_by_calories(cursor, min_calories, max_calories):
+def filter_ingredient_column(cursor, column_name, min_val=None, max_val=None):
     try:
-        cursor.execute(f"CREATE VIEW IF NOT EXISTS CaloriesView AS SELECT ingredientID, ingredientName, Calories_per_100g FROM IngredientItem WHERE Calories_per_100g BETWEEN {min_calories} AND {max_calories}")
-        return "CaloriesView"
+        query = f"CREATE VIEW IF NOT EXISTS FilteredIngredientView AS "
+        query += f"SELECT ingredientID, ingredientName, {column_name} FROM IngredientItem"
+        
+        range = []
+        
+        if min_val is not None:
+            range.append(f"{column_name} >= {min_val}")
+        if max_val is not None:
+            range.append(f"{column_name} <= {max_val}")
+        if range:
+            query += " WHERE " + " AND ".join(range)
+        
+        cursor.execute(query)
+        return "FilteredIngredientView"
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
 
-def query_ingredients_by_NutritionDensity(cursor, min_density, max_density):
-    try:
-        cursor.execute(f"CREATE VIEW IF NOT EXISTS DensityView AS SELECT ingredientID, ingredientName, NutritionDensity FROM IngredientItem WHERE NutritionDensity BETWEEN {min_density} AND {max_density}")
-        return "DensityView"
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return None
+
 
 def query_recipes_by_ingredient(cursor, ingredient_id):
     try:
@@ -74,9 +80,29 @@ connection = sqlite3.connect("nutrition.db")
 
 cursor = connection.cursor()
 
-q1 = calculate_recipe_nutrition(cursor, 1)
+q1 = filter_ingredient_column(cursor, "Cholesterol_mg", 20, 100)
 
 print_view(cursor, q1)
 
 
 connection.close()
+
+
+
+
+
+# def query_ingredients_by_calories(cursor, min_calories, max_calories):
+#     try:
+#         cursor.execute(f"CREATE VIEW IF NOT EXISTS CaloriesView AS SELECT ingredientID, ingredientName, Calories_per_100g FROM IngredientItem WHERE Calories_per_100g BETWEEN {min_calories} AND {max_calories}")
+#         return "CaloriesView"
+#     except Exception as e:
+#         print(f"Error: {str(e)}")
+#         return None
+
+# def query_ingredients_by_NutritionDensity(cursor, min_density, max_density):
+#     try:
+#         cursor.execute(f"CREATE VIEW IF NOT EXISTS DensityView AS SELECT ingredientID, ingredientName, NutritionDensity FROM IngredientItem WHERE NutritionDensity BETWEEN {min_density} AND {max_density}")
+#         return "DensityView"
+#     except Exception as e:
+#         print(f"Error: {str(e)}")
+#         return None
