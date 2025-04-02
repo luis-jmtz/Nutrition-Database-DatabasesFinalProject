@@ -2,12 +2,14 @@ import pandas as pd
 import sqlite3
 
 def print_view(cursor, view_name, max_rows=10, max_columns=None):
-    cursor.execute(f"SELECT * FROM {view_name}")
+    cursor.execute(f"SELECT * FROM {view_name}") #select all from
     rows = cursor.fetchall()
     columns = [desc[0] for desc in cursor.description]
     
     with pd.option_context('display.max_rows', max_rows, 'display.max_columns', max_columns):
         print(pd.DataFrame(rows, columns=columns))
+
+
 
 def filter_ingredient_column(cursor, column_name, min_val=None, max_val=None):
     try:
@@ -29,13 +31,17 @@ def filter_ingredient_column(cursor, column_name, min_val=None, max_val=None):
         print(f"Error: {str(e)}")
         return None
 
+
 def query_recipes_by_ingredient(cursor, ingredient_id):
     try:
+        
         cursor.execute(f"CREATE TEMP VIEW IF NOT EXISTS RecipesByIngredientView AS SELECT RecipeIngredients.recipeID, Recipes.recipeName, RecipeIngredients.ingredientQuantity FROM RecipeIngredients JOIN Recipes ON RecipeIngredients.recipeID = Recipes.recipeID WHERE RecipeIngredients.ingredientID = {ingredient_id}")
         return "RecipesByIngredientView"
+    
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
+
 
 def query_user_favorite_ingredients(cursor, user_id):
     try:
@@ -45,13 +51,16 @@ def query_user_favorite_ingredients(cursor, user_id):
         print(f"Error: {str(e)}")
         return None
 
+
 def query_user_favorite_recipes(cursor, user_id):
     try:
         cursor.execute(f"CREATE TEMP VIEW IF NOT EXISTS UserFavRecipesView AS SELECT UserFavoriteRecipes.recipeID, Recipes.recipeName FROM UserFavoriteRecipes JOIN Recipes ON UserFavoriteRecipes.recipeID = Recipes.recipeID WHERE UserFavoriteRecipes.userID = {user_id}")
         return "UserFavRecipesView"
+    
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
+
 
 def calculate_recipe_nutrition(cursor, recipe_id):
     try:
