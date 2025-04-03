@@ -125,7 +125,7 @@ def calculate_recipe_nutrition(cursor, recipe_id):
         return None
 
 
-def add_user(cursor, text_file_path: str) -> bool:
+def add_user(cursor, text_file_path):
 
     try:
         with open(text_file_path, 'r') as f:

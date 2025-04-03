@@ -12,8 +12,12 @@ cursor = connection.cursor()
 show_tables(cursor)
 view_table(cursor, "Users", max_rows= None)
 
+add_user(cursor, 'add_user_test.txt')
 
-connection.commit()
+# connection.commit()
+
+view_table(cursor, "Users", max_rows= None)
+
 
 
 connection.close()
