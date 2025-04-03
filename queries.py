@@ -43,6 +43,51 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
         return None
 
 
+def loop_filter_ingredients(cursor, csv_path, view_name="IngredientLoopFilterView"):
+    try:
+        df = pd.read_csv(csv_path)
+        columns = df.columns
+        min_values = df.iloc[0].values
+        max_values = df.iloc[1].values
+        
+        query = f"CREATE TEMP VIEW IF NOT EXISTS {view_name} AS "
+        query += "SELECT * FROM IngredientItem WHERE "
+        
+        conditions = []
+        
+        for i, column_name in enumerate(columns):
+            if column_name == 'ingredientID':
+                continue
+                
+            min_val = min_values[i]
+            max_val = max_values[i]
+            
+            if min_val == -1 and max_val == -1:
+                continue
+                
+            col_conditions = []
+            if min_val != -1:
+                col_conditions.append(f"{column_name} >= {min_val}")
+            if max_val != -1:
+                col_conditions.append(f"{column_name} <= {max_val}")
+                
+            if col_conditions:
+                conditions.append("(" + " AND ".join(col_conditions) + ")")
+        
+        if not conditions:
+            query = query.replace("WHERE", "")  # No filters case
+        else:
+            query += " AND ".join(conditions)
+        
+        cursor.execute(query)
+        print(f"Created combined filter view: {view_name}")
+        return view_name
+        
+    except Exception as e:
+        print(f"Error processing CSV: {str(e)}")
+        return None
+
+
 def query_user_favorite_ingredients(cursor, user_id):
     try:
         cursor.execute(f"CREATE TEMP VIEW IF NOT EXISTS UserFavIngredientsView AS SELECT UserFavoriteIngredients.ingredientID, IngredientItem.ingredientName FROM UserFavoriteIngredients JOIN IngredientItem ON UserFavoriteIngredients.ingredientID = IngredientItem.ingredientID WHERE UserFavoriteIngredients.userID = {user_id}")
@@ -83,7 +128,10 @@ def calculate_recipe_nutrition(cursor, recipe_id):
 connection = sqlite3.connect("nutrition.db")
 cursor = connection.cursor()
 
-q1 = filter_ingredient_column(cursor, "Cholesterol_mg", 20, 100)
-print_view(cursor, q1)
+loop_filter = loop_filter_ingredients(cursor, "filter_input2.csv")
+
+
+
+print_view(cursor, loop_filter, max_columns= 4)
 
 connection.close()

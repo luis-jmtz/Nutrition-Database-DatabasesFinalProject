@@ -1,3 +1,0 @@
-ingredientID,Calories_per_100g,Fat_g,SaturatedFats_g,MonounsaturatedFats_g,PolyunsaturatedFats_g,Carbohydrates_g,Sugars_g,Protein_g,DietaryFiber_g,Cholesterol_mg,Sodium_mg,Water_g,VitaminA_mg,VitaminB1_mg,VitaminB11_mg,VitaminB12_mg,VitaminB2_mg,VitaminB3_mg,VitaminB5_mg,VitaminB6_mg,VitaminC_mg,VitaminD_mg,VitaminE_mg,VitaminK_mg,Calcium_mg,Copper_mg,Iron_mg,Magnesium_mg,Manganese_mg,Phosphorus_mg,Potassium_mg,Selenium_mg,Zinc_mg,NutritionDensity
-1,250,15,5,6,3,5,2,12,0.5,45,300,60,0.1,0.05,0.2,0.8,0.1,2,0.5,0.1,0,0.5,1.2,0.1,120,0.02,0.8,15,0.1,100,150,10,1.2,8.5
-2,180,10,3,4,2,8,4,15,1.2,30,250,70,0.2,0.08,0.3,1,0.2,3,0.8,0.2,0,0.8,1.5,0.2,150,0.03,1,20,0.2,120,180,12,1.5,9
