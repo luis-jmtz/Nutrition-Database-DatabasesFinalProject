@@ -149,10 +149,3 @@ def add_user(cursor, text_file_path):
     except Exception as e:
         print(f"Error adding user: {str(e)}")
         return False
-
-
-connection = sqlite3.connect("nutrition.db")
-cursor = connection.cursor()
-
-connection.commit()
-connection.close()
