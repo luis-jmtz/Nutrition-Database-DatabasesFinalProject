@@ -134,6 +134,7 @@ def check_user_exists(cursor, username, password = None):
             cursor.execute(
                 f"SELECT 1 FROM Users WHERE userName = '{username}'"
             )
+            
         return cursor.fetchone() is not None
         
     except Exception as e:
@@ -142,10 +143,10 @@ def check_user_exists(cursor, username, password = None):
 
 
 
-
 def add_user(cursor, text_file_path):
 
     try:
+        #extracts text data
         with open(text_file_path, 'r') as f:
             data = f.read().strip().split(',')
             
@@ -154,6 +155,10 @@ def add_user(cursor, text_file_path):
             return False
             
         username, password = data[0].strip(), data[1].strip()
+        
+        if check_user_exists(cursor, username, password) == False:
+            print("Invalid username or password")
+            return False
         
         cursor.execute(
             f"INSERT INTO Users (userName, userPassword) VALUES ('{username}', '{password}')"

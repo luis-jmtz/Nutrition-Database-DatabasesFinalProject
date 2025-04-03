@@ -13,10 +13,9 @@ cursor = connection.cursor()
 show_tables(cursor)
 view_table(cursor, "Users", max_rows= None)
 
+print(check_user_exists(cursor, "function_tester_2"))
 
-# print(check_user_exists(cursor, "function_tester_1", "password_test_1"))
 
-
-connection.commit()
+# connection.commit()
 connection.close()
 
