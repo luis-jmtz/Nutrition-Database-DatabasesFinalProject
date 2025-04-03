@@ -13,15 +13,10 @@ cursor = connection.cursor()
 show_tables(cursor)
 view_table(cursor, "Users", max_rows= None)
 
-add_user(cursor, 'add_user_test.txt')
 
-# connection.commit()
-
+# print(check_user_exists(cursor, "function_tester_1", "password_test_1"))
 
 
-view_table(cursor, "Users", max_rows= None)
-
-
-
+connection.commit()
 connection.close()
 

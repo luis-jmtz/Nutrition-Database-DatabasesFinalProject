@@ -124,6 +124,24 @@ def calculate_recipe_nutrition(cursor, recipe_id):
         print(f"Error: {str(e)}")
         return None
 
+def check_user_exists(cursor, username, password = None):
+    try:
+        if password:
+            cursor.execute(
+                f"SELECT 1 FROM Users WHERE userName = '{username}' AND userPassword = '{password}'"
+            )
+        else:
+            cursor.execute(
+                f"SELECT 1 FROM Users WHERE userName = '{username}'"
+            )
+        return cursor.fetchone() is not None
+        
+    except Exception as e:
+        print(f"Error checking user existence: {str(e)}")
+        return False
+
+
+
 
 def add_user(cursor, text_file_path):
 
