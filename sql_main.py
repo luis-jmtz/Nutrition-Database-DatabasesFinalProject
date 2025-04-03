@@ -1,5 +1,6 @@
 import sqlite3
 from basic_sql_commands import show_tables, view_table
+from queries import add_user
 
 connection = sqlite3.connect("nutrition.db")
 
@@ -9,9 +10,10 @@ cursor = connection.cursor()
 # cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
 
 show_tables(cursor)
-view_table(cursor, "Users")
+view_table(cursor, "Users", max_rows= None)
 
 
+connection.commit()
 
 
 connection.close()

@@ -154,6 +154,5 @@ def add_user(cursor, text_file_path: str) -> bool:
 connection = sqlite3.connect("nutrition.db")
 cursor = connection.cursor()
 
-
-
+connection.commit()
 connection.close()
