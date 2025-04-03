@@ -10,7 +10,6 @@ def print_view(cursor, view_name, max_rows=10, max_columns=None):
         print(pd.DataFrame(rows, columns=columns))
 
 
-
 def filter_ingredient_column(cursor, column_name, min_val=None, max_val=None):
     try:
         query = f"CREATE TEMP VIEW IF NOT EXISTS FilteredIngredientView AS "
@@ -125,13 +124,36 @@ def calculate_recipe_nutrition(cursor, recipe_id):
         print(f"Error: {str(e)}")
         return None
 
+
+def add_user(cursor, text_file_path: str) -> bool:
+
+    try:
+        with open(text_file_path, 'r') as f:
+            data = f.read().strip().split(',')
+            
+        if len(data) != 2:
+            print(f"Error: Invalid format in {text_file_path}. Expected 'userName,userPassword'")
+            return False
+            
+        username, password = data[0].strip(), data[1].strip()
+        
+        cursor.execute(
+            f"INSERT INTO Users (userName, userPassword) VALUES ('{username}', '{password}')"
+        )
+        print(f"User '{username}' added successfully")
+        return True
+        
+    except FileNotFoundError:
+        print(f"Error: File not found at {text_file_path}")
+        return False
+    except Exception as e:
+        print(f"Error adding user: {str(e)}")
+        return False
+
+
 connection = sqlite3.connect("nutrition.db")
 cursor = connection.cursor()
 
-loop_filter = loop_filter_ingredients(cursor, "filter_input2.csv")
 
-
-
-print_view(cursor, loop_filter, max_columns= 4)
 
 connection.close()
