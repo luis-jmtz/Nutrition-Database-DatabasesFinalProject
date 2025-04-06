@@ -129,7 +129,6 @@ def calculate_recipe_nutrition(cursor, recipe_id):
         return None
 
 
-
 def check_user_exists(cursor, username, password = None):
     try:
         if password:
@@ -178,4 +177,85 @@ def add_user(cursor, json_path):
         return False
     except Exception as e:
         print(f"Error adding user: {str(e)}")
+        return False
+
+
+def add_user_favorite(cursor, json_path):
+
+    try:
+        with open(json_path, 'r') as f:
+            favorite_data = json.load(f)
+
+        user_id = favorite_data.get("userID")
+        favorite_type = favorite_data.get("type")
+        item_id = favorite_data.get("itemID")
+
+        if not all([user_id, favorite_type, item_id]):
+            print("Error: 'userID', 'type', and 'itemID' fields are required in the JSON file.")
+            return False
+
+        # Check if user exists
+        cursor.execute(f"SELECT 1 FROM Users WHERE userID = {user_id}")
+        if not cursor.fetchone():
+            print(f"Error: User with ID {user_id} doesn't exist.")
+            return False
+
+        if favorite_type.lower() == "ingredient":
+            # Check if ingredient exists
+            cursor.execute(f"SELECT 1 FROM IngredientItem WHERE ingredientID = {item_id}")
+            if not cursor.fetchone():
+                print(f"Error: Ingredient with ID {item_id} doesn't exist.")
+                return False
+            
+            # Check if favorite already exists
+            cursor.execute(
+                f"SELECT 1 FROM UserFavoriteIngredients WHERE userID = {user_id} AND ingredientID = {item_id}"
+            )
+            if cursor.fetchone():
+                print(f"Error: Ingredient {item_id} is already a favorite for user {user_id}.")
+                return False
+            
+            # Add favorite ingredient
+            cursor.execute(
+                "INSERT INTO UserFavoriteIngredients (userID, ingredientID) VALUES (?, ?)",
+                (user_id, item_id)
+            )
+            print(f"Added ingredient {item_id} to favorites for user {user_id}")
+            return True
+
+        elif favorite_type.lower() == "recipe":
+            # Check if recipe exists
+            cursor.execute(f"SELECT 1 FROM Recipes WHERE recipeID = {item_id}")
+            if not cursor.fetchone():
+                print(f"Error: Recipe with ID {item_id} doesn't exist.")
+                return False
+            
+            # Check if favorite already exists
+            cursor.execute(
+                f"SELECT 1 FROM UserFavoriteRecipes WHERE userID = {user_id} AND recipeID = {item_id}"
+            )
+            if cursor.fetchone():
+                print(f"Error: Recipe {item_id} is already a favorite for user {user_id}.")
+                return False
+            
+            # Add favorite recipe
+            cursor.execute(
+                "INSERT INTO UserFavoriteRecipes (userID, recipeID) VALUES (?, ?)",
+                (user_id, item_id)
+            )
+            print(f"Added recipe {item_id} to favorites for user {user_id}")
+            return True
+
+        else:
+            print(f"Error: Invalid type '{favorite_type}'. Must be 'ingredient' or 'recipe'.")
+            return False
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return False
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return False
+    except Exception as e:
+        print(f"Error adding user favorite: {str(e)}")
         return False

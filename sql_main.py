@@ -10,12 +10,12 @@ cursor = connection.cursor()
 # show_tables(cursor)
 view_table(cursor, "Users")
 
-add_user(cursor, "add_user.json")
+print_view(cursor, query_user_favorite_ingredients(cursor, 1))
 
+add_user_favorite(cursor, "add_user_favorite.json")
 
-view_table(cursor, "Users")
+print_view(cursor, query_user_favorite_ingredients(cursor, 1))
 
-add_user(cursor, "add_user.json")
 
 # connection.commit()
 connection.close()
