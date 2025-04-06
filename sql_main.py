@@ -10,11 +10,9 @@ cursor = connection.cursor()
 # show_tables(cursor)
 view_table(cursor, "Users")
 
-print_view(cursor, query_user_favorite_recipes(cursor, 1))
+view = query_user_favorites(cursor, "query_user_favorites.json")
 
-add_user_favorite(cursor, "add_user_favorite.json")
-
-print_view(cursor, query_user_favorite_recipes(cursor, 1))
+print_view(cursor, view)
 
 
 # connection.commit()

@@ -91,23 +91,73 @@ def loop_filter_ingredients(cursor, json_path, view_name="IngredientLoopFilterVi
         return None
 
 
-def query_user_favorite_ingredients(cursor, user_id):
+def query_user_favorites(cursor, json_path):
     try:
-        cursor.execute(f"CREATE TEMP VIEW IF NOT EXISTS UserFavIngredientsView AS SELECT UserFavoriteIngredients.ingredientID, IngredientItem.ingredientName FROM UserFavoriteIngredients JOIN IngredientItem ON UserFavoriteIngredients.ingredientID = IngredientItem.ingredientID WHERE UserFavoriteIngredients.userID = {user_id}")
-        return "UserFavIngredientsView"
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+            
+        #type: recipe OR ingredient
+
+        user_id = data.get("userID")
+        favorite_type = data.get("type")
+
+        # gets fields from JSON data
+        if not user_id or not favorite_type:
+            print("Error: 'userID' and 'type' fields are required in the JSON file.")
+            return None
+
+        # Checks if user exists
+        cursor.execute(f"SELECT 1 FROM Users WHERE userID = {user_id}")
+        if not cursor.fetchone():
+            print(f"Error: User with ID {user_id} doesn't exist.")
+            return None
+
+        view_name = f"UserFavoritesView_{user_id}"
+
+        # handles ingredient favorites
+        if favorite_type.lower() == "ingredient":
+            cursor.execute(f"""
+                CREATE TEMP VIEW IF NOT EXISTS {view_name} AS 
+                SELECT 
+                    UserFavoriteIngredients.ingredientID as itemID, 
+                    IngredientItem.ingredientName as itemName,
+                    'ingredient' as itemType
+                FROM UserFavoriteIngredients 
+                JOIN IngredientItem ON UserFavoriteIngredients.ingredientID = IngredientItem.ingredientID 
+                WHERE UserFavoriteIngredients.userID = {user_id}
+            """)
+            
+            print(f"Created view for user {user_id}'s favorite ingredients")
+            return view_name
+
+        elif favorite_type.lower() == "recipe": # handles recipes
+            cursor.execute(f"""
+                CREATE TEMP VIEW IF NOT EXISTS {view_name} AS 
+                SELECT 
+                    UserFavoriteRecipes.recipeID as itemID, 
+                    Recipes.recipeName as itemName,
+                    'recipe' as itemType
+                FROM UserFavoriteRecipes 
+                JOIN Recipes ON UserFavoriteRecipes.recipeID = Recipes.recipeID 
+                WHERE UserFavoriteRecipes.userID = {user_id}
+            """)
+            print(f"Created view for user {user_id}'s favorite recipes")
+            return view_name
+
+        else:
+            print(f"Error: Invalid type '{favorite_type}'. Must be 'ingredient' or 'recipe'.")
+            return None
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return None
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return None
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"Error querying user favorites: {str(e)}")
         return None
 
-
-def query_user_favorite_recipes(cursor, user_id):
-    try:
-        cursor.execute(f"CREATE TEMP VIEW IF NOT EXISTS UserFavRecipesView AS SELECT UserFavoriteRecipes.recipeID, Recipes.recipeName FROM UserFavoriteRecipes JOIN Recipes ON UserFavoriteRecipes.recipeID = Recipes.recipeID WHERE UserFavoriteRecipes.userID = {user_id}")
-        return "UserFavRecipesView"
-    
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return None
 
 
 def calculate_recipe_nutrition(cursor, recipe_id):
