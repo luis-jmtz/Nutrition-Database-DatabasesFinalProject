@@ -1,5 +1,7 @@
 import pandas as pd
 import sqlite3
+import json
+
 
 def print_view(cursor, view_name, max_rows=10, max_columns=None):
     cursor.execute(f"SELECT * FROM {view_name}") #select all from
@@ -42,49 +44,98 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
         return None
 
 
-def loop_filter_ingredients(cursor, csv_path, view_name="IngredientLoopFilterView"):
+def loop_filter_ingredients(cursor, json_path, view_name="IngredientLoopFilterView"):
     try:
-        df = pd.read_csv(csv_path)
-        columns = df.columns
-        min_values = df.iloc[0].values
-        max_values = df.iloc[1].values
-        
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+
+        columns = list(data.keys())
+        min_values = [data[col][0] for col in columns]
+        max_values = [data[col][1] for col in columns]
+
         query = f"CREATE TEMP VIEW IF NOT EXISTS {view_name} AS "
         query += "SELECT * FROM IngredientItem WHERE "
         
         conditions = []
-        
+
         for i, column_name in enumerate(columns):
             if column_name == 'ingredientID':
                 continue
-                
+
             min_val = min_values[i]
             max_val = max_values[i]
-            
+
             if min_val == -1 and max_val == -1:
                 continue
-                
+
             col_conditions = []
             if min_val != -1:
                 col_conditions.append(f"{column_name} >= {min_val}")
             if max_val != -1:
                 col_conditions.append(f"{column_name} <= {max_val}")
-                
+
             if col_conditions:
                 conditions.append("(" + " AND ".join(col_conditions) + ")")
-        
+
         if not conditions:
-            query = query.replace("WHERE", "")  # No filters case
+            query = query.replace("WHERE", "")
         else:
             query += " AND ".join(conditions)
-        
+
         cursor.execute(query)
         print(f"Created combined filter view: {view_name}")
         return view_name
-        
+
     except Exception as e:
-        print(f"Error processing CSV: {str(e)}")
+        print(f"Error processing JSON: {str(e)}")
         return None
+
+
+
+
+# def loop_filter_ingredients(cursor, csv_path, view_name="IngredientLoopFilterView"):
+#     try:
+#         df = pd.read_csv(csv_path)
+#         columns = df.columns
+#         min_values = df.iloc[0].values
+#         max_values = df.iloc[1].values
+        
+#         query = f"CREATE TEMP VIEW IF NOT EXISTS {view_name} AS "
+#         query += "SELECT * FROM IngredientItem WHERE "
+        
+#         conditions = []
+        
+#         for i, column_name in enumerate(columns):
+#             if column_name == 'ingredientID':
+#                 continue
+                
+#             min_val = min_values[i]
+#             max_val = max_values[i]
+            
+#             if min_val == -1 and max_val == -1:
+#                 continue
+                
+#             col_conditions = []
+#             if min_val != -1:
+#                 col_conditions.append(f"{column_name} >= {min_val}")
+#             if max_val != -1:
+#                 col_conditions.append(f"{column_name} <= {max_val}")
+                
+#             if col_conditions:
+#                 conditions.append("(" + " AND ".join(col_conditions) + ")")
+        
+#         if not conditions:
+#             query = query.replace("WHERE", "")  # No filters case
+#         else:
+#             query += " AND ".join(conditions)
+        
+#         cursor.execute(query)
+#         print(f"Created combined filter view: {view_name}")
+#         return view_name
+        
+#     except Exception as e:
+#         print(f"Error processing CSV: {str(e)}")
+#         return None
 
 
 def query_user_favorite_ingredients(cursor, user_id):
@@ -140,7 +191,6 @@ def check_user_exists(cursor, username, password = None):
     except Exception as e:
         print(f"Error checking user existence: {str(e)}")
         return False
-
 
 
 def add_user(cursor, text_file_path):

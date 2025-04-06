@@ -10,10 +10,14 @@ cursor = connection.cursor()
 # created the SQL Table
 # cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
 
-show_tables(cursor)
-view_table(cursor, "Users", max_rows= None)
+# show_tables(cursor)
+# view_table(cursor, "Users", max_rows= None)
 
-print(check_user_exists(cursor, "function_tester_2"))
+# print(check_user_exists(cursor, "function_tester_2"))
+
+view = loop_filter_ingredients(cursor,"ingredient_filter.json")
+
+print_view(cursor, view, max_columns= 3, max_rows=5) 
 
 
 # connection.commit()
