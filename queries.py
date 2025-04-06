@@ -144,6 +144,37 @@ def query_user_favorites(cursor, json_path):
             print(f"Created view for user {user_id}'s favorite recipes")
             return view_name
 
+        # Handle both favorites case
+        elif favorite_type.lower() == "both":
+            cursor.execute(f"""
+                CREATE TEMP VIEW IF NOT EXISTS {view_name} AS
+                -- Combine favorite ingredients with their names
+                SELECT 
+                    UserFavoriteIngredients.ingredientID as itemID,
+                    IngredientItem.ingredientName as itemName,
+                    'ingredient' as itemType
+                FROM UserFavoriteIngredients
+                JOIN IngredientItem ON UserFavoriteIngredients.ingredientID = IngredientItem.ingredientID
+                WHERE UserFavoriteIngredients.userID = {user_id}
+                
+                UNION ALL
+                
+                -- Combine favorite recipes with their names
+                SELECT 
+                    UserFavoriteRecipes.recipeID as itemID,
+                    Recipes.recipeName as itemName,
+                    'recipe' as itemType
+                FROM UserFavoriteRecipes
+                JOIN Recipes ON UserFavoriteRecipes.recipeID = Recipes.recipeID
+                WHERE UserFavoriteRecipes.userID = {user_id}
+                
+                -- Optional: Add sorting if desired
+                ORDER BY itemType, itemName
+            """)
+            print(f"Created combined view for user {user_id}'s favorite ingredients and recipes")
+            return view_name
+
+
         else:
             print(f"Error: Invalid type '{favorite_type}'. Must be 'ingredient' or 'recipe'.")
             return None
