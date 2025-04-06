@@ -9,9 +9,9 @@ cursor = connection.cursor()
 # show_tables(cursor)
 # view_table(cursor, "Users")
 
-# view = loop_filter_ingredients(cursor, "jsons\ingredient_filter.json")
+view = calculate_recipe_nutrition(cursor, 1)
 
-# print_view(cursor, view, max_columns= 4)
+print_view(cursor, view)
 
 
 # connection.commit()
