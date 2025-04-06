@@ -7,18 +7,15 @@ connection = sqlite3.connect("nutrition.db")
 
 cursor = connection.cursor()
 
-# created the SQL Table
-# cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
-
 # show_tables(cursor)
-# view_table(cursor, "Users", max_rows= None)
+view_table(cursor, "Users")
 
-# print(check_user_exists(cursor, "function_tester_2"))
+add_user(cursor, "add_user.json")
 
-view = loop_filter_ingredients(cursor,"ingredient_filter.json")
 
-print_view(cursor, view, max_columns= 3, max_rows=5) 
+view_table(cursor, "Users")
 
+add_user(cursor, "add_user.json")
 
 # connection.commit()
 connection.close()
