@@ -44,30 +44,37 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
         return None
 
 
-def loop_filter_ingredients(cursor, json_path, view_name="IngredientLoopFilterView"):
+def loop_filter_ingredients(cursor, json_path):
     try:
         with open(json_path, 'r') as f:
             data = json.load(f)
 
+        # gets column names and their min/max values from JSON
         columns = list(data.keys())
         min_values = [data[col][0] for col in columns]
         max_values = [data[col][1] for col in columns]
 
-        query = f"CREATE TEMP VIEW IF NOT EXISTS {view_name} AS "
+        query = f"CREATE TEMP VIEW IF NOT EXISTS IngredientLoopFilterView AS "
         query += "SELECT * FROM IngredientItem WHERE "
         
+        # List to store individual filter conditions
         conditions = []
 
         for i, column_name in enumerate(columns):
+            
+            # Skips ingredientID since doesn't filter it directly
             if column_name == 'ingredientID':
                 continue
 
+            # Gets the min and max values for current column
             min_val = min_values[i]
             max_val = max_values[i]
 
+            # skips column if the max AND min are empty
             if min_val == -1 and max_val == -1:
                 continue
 
+            # List to store conditions for current column
             col_conditions = []
             if min_val != -1:
                 col_conditions.append(f"{column_name} >= {min_val}")
@@ -83,8 +90,8 @@ def loop_filter_ingredients(cursor, json_path, view_name="IngredientLoopFilterVi
             query += " AND ".join(conditions)
 
         cursor.execute(query)
-        print(f"Created combined filter view: {view_name}")
-        return view_name
+        print(f"Created combined filter view: IngredientLoopFilterView")
+        return "IngredientLoopFilterView"
 
     except Exception as e:
         print(f"Error processing JSON: {str(e)}")
