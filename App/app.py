@@ -5,10 +5,19 @@ import json
 import os
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-    return "Hello, World!"
+connection = sqlite3.connect("nutrition.db")
+
+cursor = connection.cursor()
 
 
-if __name__ == '__main__':
-	app.run(debug = True)
+
+# @app.route("/")
+# def hello():
+#     return "Hello, World!"
+
+
+# if __name__ == '__main__':
+# 	app.run(debug = True)
+
+# connection.commit()
+connection.close()
