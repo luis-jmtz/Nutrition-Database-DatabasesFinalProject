@@ -177,7 +177,6 @@ def query_user_favorites(cursor, json_path):
         return None
 
 
-
 def calculate_recipe_nutrition(cursor, recipe_id):
     try:
         cursor.execute(f"""
