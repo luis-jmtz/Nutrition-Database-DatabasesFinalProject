@@ -1,5 +1,4 @@
 import sqlite3
-from basic_sql_commands import show_tables, view_table
 from queries import *
 
 connection = sqlite3.connect("nutrition.db")
