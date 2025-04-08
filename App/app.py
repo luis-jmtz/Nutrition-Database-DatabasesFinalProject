@@ -23,7 +23,7 @@ filter_columns = [
 ]
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         filters = {} 
