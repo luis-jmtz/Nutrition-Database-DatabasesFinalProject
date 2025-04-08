@@ -85,7 +85,7 @@ def index():
     return render_template('filter_form.html', columns=filter_columns)     
 
 
-# if __name__ == '__main__':
-# 	app.run(debug = True)
+if __name__ == '__main__':
+	app.run(debug = True)
 
 # connection.commit()
