@@ -32,7 +32,7 @@ def index():
 
         for column in selected_columns:
             min_val = request.form.get(f"{column}_min", "").strip()
-            max_val = request.form.get(f"{column}_max").strip()
+            max_val = request.form.get(f"{column}_max", "").strip()
             # get the min and max values from the json per column
 
             #only add to column to filter if at least one value is provided
