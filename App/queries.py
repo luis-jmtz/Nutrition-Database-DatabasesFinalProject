@@ -12,26 +12,6 @@ def print_view(cursor, view_name, max_rows=10, max_columns=None):
         print(pd.DataFrame(rows, columns=columns))
 
 
-def filter_ingredient_column(cursor, column_name, min_val=None, max_val=None):
-    try:
-        query = f"CREATE TEMP VIEW IF NOT EXISTS FilteredIngredientView AS "
-        query += f"SELECT ingredientID, ingredientName, {column_name} FROM IngredientItem"
-        
-        range = []
-        
-        if min_val is not None:
-            range.append(f"{column_name} >= {min_val}")
-        if max_val is not None:
-            range.append(f"{column_name} <= {max_val}")
-        if range:
-            query += " WHERE " + " AND ".join(range)
-        
-        cursor.execute(query)
-        return "FilteredIngredientView"
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return None
-
 
 def query_recipes_by_ingredient(cursor, ingredient_id):
     try:
@@ -198,24 +178,6 @@ def query_user_favorites(cursor, json_path):
 
 
 
-# def calculate_recipe_nutrition(cursor, recipe_id):
-#     try:
-#         cursor.execute(f"""
-#         CREATE TEMP VIEW IF NOT EXISTS RecipeNutritionView AS 
-#         SELECT 
-#             SUM(IngredientItem.Calories_per_100g * RecipeIngredients.ingredientQuantity / 100) as TotalCalories,
-#             SUM(IngredientItem.Protein_g * RecipeIngredients.ingredientQuantity / 100) as TotalProtein,
-#             SUM(IngredientItem.Carbohydrates_g * RecipeIngredients.ingredientQuantity / 100) as TotalCarbs,
-#             SUM(IngredientItem.Fat_g * RecipeIngredients.ingredientQuantity / 100) as TotalFat
-#         FROM RecipeIngredients
-#         JOIN IngredientItem ON RecipeIngredients.ingredientID = IngredientItem.ingredientID
-#         WHERE RecipeIngredients.recipeID = {recipe_id}
-#         """)
-#         return "RecipeNutritionView"
-#     except Exception as e:
-#         print(f"Error: {str(e)}")
-#         return None
-
 def calculate_recipe_nutrition(cursor, recipe_id):
     try:
         cursor.execute(f"""
@@ -274,9 +236,6 @@ def calculate_recipe_nutrition(cursor, recipe_id):
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
-
-
-
 
 
 def check_user_exists(cursor, username, password = None):
