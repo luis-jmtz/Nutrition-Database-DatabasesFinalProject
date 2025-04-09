@@ -332,7 +332,6 @@ def is_admin(cursor, user_id):
         return False
 
 
-
 def add_user_favorite(cursor, json_path):
 
     try:
@@ -413,3 +412,17 @@ def add_user_favorite(cursor, json_path):
         print(f"Error adding user favorite: {str(e)}")
         return False
 
+def search_ingredient_name(cursor, search_text=''):
+    try:
+        # Create the view with the search text directly inserted
+        cursor.execute(f"""
+            CREATE TEMP VIEW SearchedIngredient AS
+            SELECT ingredientID, ingredientName 
+            FROM IngredientItem 
+            WHERE ingredientName LIKE '%{search_text}%'
+        """)
+        
+        return "SearchedIngredient"
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
