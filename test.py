@@ -5,14 +5,14 @@ connection = sqlite3.connect("nutrition.db")
 
 cursor = connection.cursor()
 
-# show_tables(cursor)
+
 # view_table(cursor, "Users")
 
-view = calculate_recipe_nutrition(cursor, 1)
 
-print_view(cursor, view)
+cursor.executescript(open(r'SQL_Commands\table_creation.sql').read())
 
 
-# connection.commit()
+connection.commit()
+show_tables(cursor)
 connection.close()
 

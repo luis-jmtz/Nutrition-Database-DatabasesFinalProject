@@ -1,5 +1,13 @@
 /*
 
+CREATE TABLE Admins (
+    adminID INTEGER PRIMARY KEY,
+    userID INTEGER NOT NULL,
+    FOREIGN KEY (userID) REFERENCES Users(userID)
+);
+
+
+
 CREATE TABLE RecipeIngredients(
     recipeID INTEGER,
     ingredientID INTEGER,
