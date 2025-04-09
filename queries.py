@@ -412,3 +412,4 @@ def add_user_favorite(cursor, json_path):
     except Exception as e:
         print(f"Error adding user favorite: {str(e)}")
         return False
+
