@@ -53,6 +53,29 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
         return None
 
 
+def search_ingredient_name(cursor, search_text='', order=1):
+    try:
+        # Determine the ORDER BY clause based on the order parameter
+        order_clause = ""
+        if order == 1:
+            order_clause = "ORDER BY ingredientName ASC"
+        elif order == 2:
+            order_clause = "ORDER BY ingredientName DESC"
+        
+        cursor.execute(f"""
+            CREATE TEMP VIEW SearchedIngredient AS
+            SELECT ingredientID, ingredientName
+            FROM IngredientItem 
+            WHERE ingredientName LIKE '%{search_text}%'
+            {order_clause}
+        """)
+        return "SearchedIngredient"
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
 def loop_filter_ingredients(cursor, json_path):
     try:
         with open(json_path, 'r') as f:
@@ -105,6 +128,11 @@ def loop_filter_ingredients(cursor, json_path):
     except Exception as e:
         print(f"Error processing JSON: {str(e)}")
         return None
+
+
+
+
+
 
 
 def query_user_favorites(cursor, json_path):
@@ -412,24 +440,3 @@ def add_user_favorite(cursor, json_path):
         print(f"Error adding user favorite: {str(e)}")
         return False
 
-def search_ingredient_name(cursor, search_text='', order=1):
-    try:
-        # Determine the ORDER BY clause based on the order parameter
-        order_clause = ""
-        if order == 1:
-            order_clause = "ORDER BY ingredientName ASC"
-        elif order == 2:
-            order_clause = "ORDER BY ingredientName DESC"
-        
-        cursor.execute(f"""
-            CREATE TEMP VIEW SearchedIngredient AS
-            SELECT ingredientID, ingredientName
-            FROM IngredientItem 
-            WHERE ingredientName LIKE '%{search_text}%'
-            {order_clause}
-        """)
-        return "SearchedIngredient"
-    
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
