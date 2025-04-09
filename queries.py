@@ -42,7 +42,6 @@ def print_view(cursor, view_name, max_rows=10, max_columns=None):
         print(pd.DataFrame(rows, columns=columns))
 
 
-
 def query_recipes_by_ingredient(cursor, ingredient_id):
     try:
         
@@ -317,6 +316,10 @@ def add_user(cursor, json_path):
         print(f"Error adding user: {str(e)}")
         return False
 
+
+def add_admin(cursor, userID):
+    query = "INSERT INTO Admins (userID) VALUES (?)"
+    cursor.execute(query, (userID,))
 
 def add_user_favorite(cursor, json_path):
 
