@@ -12,7 +12,7 @@ cursor = connection.cursor()
 # add_admin(cursor, 12)
 # print(is_admin(cursor, 12))
 
-view = search_ingredient_name(cursor, "apple")
+view = search_ingredient_name(cursor, "apple", order = 2)
 print_view(cursor, view)
 
 # connection.commit()

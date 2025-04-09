@@ -412,17 +412,24 @@ def add_user_favorite(cursor, json_path):
         print(f"Error adding user favorite: {str(e)}")
         return False
 
-def search_ingredient_name(cursor, search_text=''):
+def search_ingredient_name(cursor, search_text='', order=1):
     try:
-        # Create the view with the search text directly inserted
+        # Determine the ORDER BY clause based on the order parameter
+        order_clause = ""
+        if order == 1:
+            order_clause = "ORDER BY ingredientName ASC"
+        elif order == 2:
+            order_clause = "ORDER BY ingredientName DESC"
+        
         cursor.execute(f"""
             CREATE TEMP VIEW SearchedIngredient AS
-            SELECT ingredientID, ingredientName 
+            SELECT ingredientID, ingredientName
             FROM IngredientItem 
             WHERE ingredientName LIKE '%{search_text}%'
+            {order_clause}
         """)
-        
         return "SearchedIngredient"
+    
     except Exception as e:
         print(f"Error: {e}")
         return None
