@@ -10,8 +10,8 @@ view_table(cursor, "Admins")
 
 
 # add_admin(cursor, 12)
+print(is_admin(cursor, 12))
 
-view_table(cursor, "Admins")
 # connection.commit()
 connection.close()
 

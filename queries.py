@@ -320,6 +320,18 @@ def add_user(cursor, json_path):
 def add_admin(cursor, userID):
     query = "INSERT INTO Admins (userID) VALUES (?)"
     cursor.execute(query, (userID,))
+    
+    
+def is_admin(cursor, user_id):
+    try:
+        cursor.execute("SELECT 1 FROM Admins WHERE userID = ?", (user_id,))
+        return cursor.fetchone() is not None #returns true if the value it got is not-None
+    
+    except Exception as e:
+        print(f"Error checking admin status: {str(e)}")
+        return False
+
+
 
 def add_user_favorite(cursor, json_path):
 
