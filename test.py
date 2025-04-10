@@ -14,8 +14,7 @@ cursor = connection.cursor()
 
 # view = search_ingredient_name(cursor, "", order = 2)
 
-view = ''
-
+view = search_ingredients(cursor, fr"jsons\search_ingredients.json", search_text='', order=0)
 
 print_view(cursor, view)
 

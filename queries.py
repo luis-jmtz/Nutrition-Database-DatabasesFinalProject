@@ -55,7 +55,7 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
         return None
 
 
-def search_ingredient_name(cursor, search_text='', order=1):
+def search_ingredient_name(cursor, search_text='', order=0):
     try:
         # Determine the ORDER BY clause based on the order parameter
         order_clause = ""
@@ -131,14 +131,14 @@ def loop_filter_ingredients(cursor, json_path):
         print(f"Error processing JSON: {str(e)}")
         return None
 
-def search_ingredients(cursor, search_json_path, filter_json_path):
+def search_ingredients(cursor, json_path, search_text='', order=0):
     try:
-        # Load search parameters
-        with open(search_json_path, 'r') as f:
-            search_data = json.load(f)
+        # # Load search parameters
+        # with open(search_json_path, 'r') as f:
+        #     search_data = json.load(f)
         
-        search_text = search_data.get("search_text", "")
-        order = search_data.get("order", 1)
+        # search_text = search_data.get("search_text", "")
+        # order = search_data.get("order", 1)
         
         # Apply text search filter
         search_view = search_ingredient_name(cursor, search_text, order)
@@ -146,7 +146,7 @@ def search_ingredients(cursor, search_json_path, filter_json_path):
             return None
             
         # Apply numeric filters
-        filter_view = loop_filter_ingredients(cursor, filter_json_path)
+        filter_view = loop_filter_ingredients(cursor, json_path)
         if not filter_view:
             return None
             
