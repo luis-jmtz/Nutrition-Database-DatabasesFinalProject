@@ -1,6 +1,8 @@
 import pandas as pd
 import sqlite3
 import json
+import os
+
 
 
 def show_tables(cursor):
@@ -129,10 +131,44 @@ def loop_filter_ingredients(cursor, json_path):
         print(f"Error processing JSON: {str(e)}")
         return None
 
-
-
-
-
+def search_ingredients(cursor, search_json_path, filter_json_path):
+    try:
+        # Load search parameters
+        with open(search_json_path, 'r') as f:
+            search_data = json.load(f)
+        
+        search_text = search_data.get("search_text", "")
+        order = search_data.get("order", 1)
+        
+        # Apply text search filter
+        search_view = search_ingredient_name(cursor, search_text, order)
+        if not search_view:
+            return None
+            
+        # Apply numeric filters
+        filter_view = loop_filter_ingredients(cursor, filter_json_path)
+        if not filter_view:
+            return None
+            
+        # Create combined view
+        combined_view = "FilteredIngredients"
+        cursor.execute(f"""
+            CREATE TEMP VIEW IF NOT EXISTS {combined_view} AS
+            SELECT IngredientItem.* 
+            FROM IngredientItem
+            WHERE ingredientID IN (
+                SELECT ingredientID FROM {search_view}
+            )
+            AND ingredientID IN (
+                SELECT ingredientID FROM {filter_view}
+            )
+        """)
+        
+        return combined_view
+        
+    except Exception as e:
+        print(f"Error in search_ingredients: {str(e)}")
+        return None
 
 
 def query_user_favorites(cursor, json_path):
