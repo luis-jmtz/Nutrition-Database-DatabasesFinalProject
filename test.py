@@ -9,19 +9,16 @@ connection = sqlite3.connect("nutrition.db")
 
 cursor = connection.cursor()
 
-# cursor.execute("DROP TABLE IF EXISTS PendingRecipes")
-# cursor.execute("DROP TABLE IF EXISTS PendingRecipeIngredients")
-
-show_tables(cursor)
-# cursor.executescript(open(r'SQL_Commands\recipe_requests_tables.sql').read())
 
 
+# view_table(cursor, "Users")
 
+# view_table(cursor, "Admins")
 
+recipe_approval_rejection(cursor, r"jsons\approval_request.json" )
 # submit_recipe_for_approval(cursor, r"jsons\recipe_submission.json")
 
-# view_table(cursor, "PendingRecipes")
-
+view_table(cursor, "PendingRecipes")
 
 #connection.commit()
 connection.close()
