@@ -14,10 +14,17 @@ cursor = connection.cursor()
 
 # view = search_ingredient_name(cursor, "", order = 2)
 
-view = search_ingredients(cursor, fr"jsons\search_ingredients.json", search_text='', order=0)
+# view = search_ingredients(cursor, fr"jsons\search_ingredients.json", search_text='', order=0)
+# cursor.execute("DROP TABLE IF EXISTS PendingRecipes")
+# cursor.execute("DROP TABLE IF EXISTS PendingRecipeIngredients")
 
-print_view(cursor, view)
+# show_tables(cursor)
+# cursor.executescript(open(r'SQL_Commands\recipe_requests_tables.sql').read())
+show_tables(cursor)
 
-# connection.commit()
+
+# print_view(cursor, view)
+
+connection.commit()
 connection.close()
 
