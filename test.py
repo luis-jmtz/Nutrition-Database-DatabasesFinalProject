@@ -10,7 +10,11 @@ connection = sqlite3.connect("nutrition.db")
 cursor = connection.cursor()
 
 
-show_tables(cursor)
+
+submit_recipe_for_approval(cursor, r"jsons\recipe_submission.json")
+
+view_table(cursor, "PendingRecipes")
+
 
 #connection.commit()
 connection.close()

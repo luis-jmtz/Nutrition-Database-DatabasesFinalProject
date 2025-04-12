@@ -1,0 +1,18 @@
+{
+    "recipeName": "Vegetable Stir Fry",
+    "recipeDescription": "Quick and healthy vegetable stir fry",
+    "ingredients": [
+        {
+            "ingredientID": 101,
+            "ingredientQuantity": 150
+        },
+        {
+            "ingredientID": 205,
+            "ingredientQuantity": 100
+        },
+        {
+            "ingredientID": 310,
+            "ingredientQuantity": 50
+        }
+    ]
+}
