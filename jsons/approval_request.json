@@ -1,6 +1,6 @@
 {
-    "pendingID": 2,
-    "action": "reject",
+    "pendingID": 1,
+    "action": "approve",
     "userName": "admin1",
     "userPassword": "admin123"
 }
