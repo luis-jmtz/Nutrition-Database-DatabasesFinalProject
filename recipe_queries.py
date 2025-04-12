@@ -60,3 +60,58 @@ def calculate_recipe_nutrition(cursor, recipe_id):
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
+
+
+def sumbit_recipe_for_approval(cursor, json_path):
+    try:
+    
+        with open(json_path, 'r') as f: #opens and reads files
+            recipe_data = json.load(f)
+
+        #validates required fields
+        required_fields = ['recipeName', 'recipeDescription', 'ingredients'] #ingredients are ingredientIDs
+
+        for field in required_fields:
+            if field not in recipe_data:
+                print(f"Error: Missing {field} field")
+                return False
+            
+        #checks that all of the ingredients exist in the database
+        for ingredeint in recipe_data['ingrdents']:
+            cursor.execute("Select 1 FROM IngredientItem WHERE ingredientItem = ?", (ingredeint))
+            if not cursor.fetchone():
+                print(f"IngredientID {ingredeint} does not exist") # for a more complete process this function would use the search_ingredient_name function instead
+                return False
+    
+
+        #insert into PendingRecipes
+        cursor.execute(
+            """INSERT INTO PendingRecipes 
+               (recipeName, recipeDescription) 
+               VALUES (?, ?)""",
+            (recipe_data['recipeName'], recipe_data['recipeDescription'])
+        )
+        pending_id = cursor.lastrowid #saves id do that it can be referenced for pendingIngredients
+
+
+        #inserts ingredients into PendingRecipeIngredients
+        for ingredient in recipe_data['ingredients']:
+            cursor.execute(
+                """INSERT INTO PendingRecipeIngredients 
+                   (pendingID, ingredientID, ingredientQuantity) 
+                   VALUES (?, ?, ?)""",
+                (pending_id, ingredient['ingredientID'], ingredient['ingredientQuantity'])
+            )
+
+        print(f"Recipe submitted for approval with pendingID: {pending_id}")
+        return True
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return False
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return False
+    except Exception as e:
+        print(f"Error submitting recipe for approval: {str(e)}")
+        return False
