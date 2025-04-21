@@ -118,7 +118,6 @@ def submit_recipe_for_approval(cursor, json_path):
         return False
     
 
-
 def recipe_approval_rejection(cursor, json_path):
     
     try:
@@ -150,109 +149,6 @@ def recipe_approval_rejection(cursor, json_path):
         user_id = user[0]
 
         # Verify admin status
-        if not is_admin(cursor, user_id):
-            print("Error: Only admins can approve or reject recipes")
-            return None
-
-        # Handle approval
-        if action.lower() == "approve":
-            # Get the pending recipe
-            cursor.execute("""
-                SELECT recipeName, recipeDescription
-                FROM PendingRecipes 
-                WHERE pendingID = ?
-            """, (pending_id,))
-            recipe = cursor.fetchone()
-            
-            if not recipe:
-                print(f"Error: Pending recipe with ID {pending_id} not found.")
-                return None
-                
-            # Insert into Recipes table
-            cursor.execute(
-                """INSERT INTO Recipes (recipeName, recipeDescription) 
-                   VALUES (?, ?)""",
-                (recipe[0], recipe[1])
-            )
-            recipe_id = cursor.lastrowid
-            
-            # Move ingredients to RecipeIngredients table
-            cursor.execute("""
-                INSERT INTO RecipeIngredients (recipeID, ingredientID, ingredientQuantity)
-                SELECT ?, ingredientID, ingredientQuantity
-                FROM PendingRecipeIngredients
-                WHERE pendingID = ?
-            """, (recipe_id, pending_id))
-            
-            # Delete from pending tables
-            cursor.execute("DELETE FROM PendingRecipeIngredients WHERE pendingID = ?", (pending_id,))
-            cursor.execute("DELETE FROM PendingRecipes WHERE pendingID = ?", (pending_id,))
-            
-            print(f"Recipe approved and added to main table with recipeID: {recipe_id}")
-            return recipe_id
-
-        # Handle rejection
-        elif action.lower() == "reject":
-            # Verify recipe exists
-            cursor.execute("SELECT 1 FROM PendingRecipes WHERE pendingID = ?", (pending_id,))
-            if not cursor.fetchone():
-                print(f"Error: Pending recipe with ID {pending_id} not found.")
-                return False
-                
-            # Delete from pending tables
-            cursor.execute("DELETE FROM PendingRecipeIngredients WHERE pendingID = ?", (pending_id,))
-            cursor.execute("DELETE FROM PendingRecipes WHERE pendingID = ?", (pending_id,))
-            
-            print(f"Recipe with pendingID {pending_id} rejected and removed.")
-            return True
-
-        else:
-            print(f"Error: Invalid action '{action}'. Must be 'approve' or 'reject'.")
-            return None
-
-    except FileNotFoundError:
-        print(f"Error: File not found at {json_path}")
-        return None
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format.")
-        return None
-    except Exception as e:
-        print(f"Error in recipe_approval_rejection: {str(e)}")
-        return None
-
-
-
-def recipe_approval_rejection(cursor, json_path):
-
-    try:
-        with open(json_path, 'r') as f:
-            data = json.load(f)
-
-        # get required fields
-        pending_id = data.get("pendingID")
-        action = data.get("action")  # "approve" or "reject"
-        username = data.get("userName")
-        password = data.get("userPassword")
-
-        #validate fields
-        if not all([pending_id, action, username, password]):
-            print("Error: Missing required fields in JSON (pendingID, action, userName, userPassword)")
-            return None
-
-        # Check if user exists and get userID
-        cursor.execute(
-            "SELECT userID FROM Users WHERE userName = ? AND userPassword = ?",
-            (username, password)
-        )
-        user = cursor.fetchone()
-        
-        if not user:
-            print("Error: Invalid username or password")
-            return None
-
-        user_id = user[0]
-
-        # check admin status
         if not is_admin(cursor, user_id):
             print("Error: Only admins can approve or reject recipes")
             return None
