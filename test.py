@@ -12,8 +12,16 @@ cursor = connection.cursor()
 # cursor.execute(open(r"SQL_Commands\ingredient_request_table.sql").read())
 
 
-show_tables(cursor)
+
+
+# submit_ingredient_for_approval(cursor, r"jsons\ingredient_submission.json")
+
+
+
 
 connection.commit()
+
+# view_table(cursor, r"PendingIngredientItem")
+
 connection.close()
 
