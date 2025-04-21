@@ -2,6 +2,7 @@ import pandas as pd
 import sqlite3
 import json
 import os
+from user_queries import is_admin
 
 
 def query_recipes_by_ingredient(cursor, ingredient_id):
@@ -13,7 +14,6 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
-
 
 def search_ingredient_name(cursor, search_text='', order=0):
     try:
@@ -36,7 +36,6 @@ def search_ingredient_name(cursor, search_text='', order=0):
     except Exception as e:
         print(f"Error: {e}")
         return None
-
 
 def loop_filter_ingredients(cursor, json_path):
     try:
@@ -122,4 +121,162 @@ def search_ingredients(cursor, json_path, search_text='', order=0):
         
     except Exception as e:
         print(f"Error in search_ingredients: {str(e)}")
+        return None
+
+
+def submit_ingredient_for_approval(cursor, json_path):
+    try:
+        with open(json_path, 'r') as f:
+            ingredient_data = json.load(f)
+
+        # Validate required fields
+        if 'ingredientName' not in ingredient_data or 'Calories_per_100g' not in ingredient_data:
+            print("Error: 'ingredientName' and 'Calories_per_100g' fields are required")
+            return False
+
+        # Insert into PendingIngredientItem table
+        cursor.execute("""
+            INSERT INTO PendingIngredientItem (
+                ingredientName, Calories_per_100g, Fat_g, SaturatedFats_g, MonounsaturatedFats_g,
+                PolyunsaturatedFats_g, Carbohydrates_g, Sugars_g, Protein_g, DietaryFiber_g,
+                Cholesterol_mg, Sodium_mg, Water_g, VitaminA_mg, VitaminB1_mg, VitaminB11_mg,
+                VitaminB12_mg, VitaminB2_mg, VitaminB3_mg, VitaminB5_mg, VitaminB6_mg,
+                VitaminC_mg, VitaminD_mg, VitaminE_mg, VitaminK_mg, Calcium_mg, Copper_mg,
+                Iron_mg, Magnesium_mg, Manganese_mg, Phosphorus_mg, Potassium_mg,
+                Selenium_mg, Zinc_mg, NutritionDensity
+            ) VALUES (
+                :ingredientName, :Calories_per_100g, :Fat_g, :SaturatedFats_g, :MonounsaturatedFats_g,
+                :PolyunsaturatedFats_g, :Carbohydrates_g, :Sugars_g, :Protein_g, :DietaryFiber_g,
+                :Cholesterol_mg, :Sodium_mg, :Water_g, :VitaminA_mg, :VitaminB1_mg, :VitaminB11_mg,
+                :VitaminB12_mg, :VitaminB2_mg, :VitaminB3_mg, :VitaminB5_mg, :VitaminB6_mg,
+                :VitaminC_mg, :VitaminD_mg, :VitaminE_mg, :VitaminK_mg, :Calcium_mg, :Copper_mg,
+                :Iron_mg, :Magnesium_mg, :Manganese_mg, :Phosphorus_mg, :Potassium_mg,
+                :Selenium_mg, :Zinc_mg, :NutritionDensity
+            )
+        """, ingredient_data)
+
+        pending_id = cursor.lastrowid
+        print(f"Ingredient submitted for approval with pendingID: {pending_id}")
+        return True
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return False
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return False
+    except Exception as e:
+        print(f"Error submitting ingredient for approval: {str(e)}")
+        return False
+
+
+def ingredient_approval_rejection(cursor, json_path):
+    try:
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+
+        # Extract required fields
+        pending_id = data.get("pendingID")
+        action = data.get("action")  # "approve" or "reject"
+        username = data.get("userName")
+        password = data.get("userPassword")
+
+        # Validate required fields
+        if not all([pending_id, action, username, password]):
+            print("Error: Missing required fields in JSON (pendingID, action, userName, userPassword)")
+            return None
+
+        # Check if user exists and get userID
+        cursor.execute(
+            "SELECT userID FROM Users WHERE userName = ? AND userPassword = ?",
+            (username, password)
+        )
+        user = cursor.fetchone()
+        
+        if not user:
+            print("Error: Invalid username or password")
+            return None
+
+        user_id = user[0]
+
+        # Verify admin status
+        if not is_admin(cursor, user_id):
+            print("Error: Only admins can approve or reject ingredients")
+            return None
+
+        # Handle approval
+        if action.lower() == "approve":
+            # Get the pending ingredient
+            cursor.execute("""
+                SELECT * FROM PendingIngredientItem 
+                WHERE pendingID = ?
+            """, (pending_id,))
+            ingredient = cursor.fetchone()
+            
+            if not ingredient:
+                print(f"Error: Pending ingredient with ID {pending_id} not found.")
+                return None
+                
+            # Get column names (excluding pendingID)
+            cursor.execute("PRAGMA table_info(PendingIngredientItem)")
+            columns = [col[1] for col in cursor.fetchall() if col[1] != "pendingID"]
+            
+            # Create dictionary mapping column names to values
+            ingredient_dict = dict(zip(columns, ingredient[1:]))
+            
+            # Insert into IngredientItem table
+            cursor.execute("""
+                INSERT INTO IngredientItem (
+                    ingredientName, Calories_per_100g, Fat_g, SaturatedFats_g, MonounsaturatedFats_g,
+                    PolyunsaturatedFats_g, Carbohydrates_g, Sugars_g, Protein_g, DietaryFiber_g,
+                    Cholesterol_mg, Sodium_mg, Water_g, VitaminA_mg, VitaminB1_mg, VitaminB11_mg,
+                    VitaminB12_mg, VitaminB2_mg, VitaminB3_mg, VitaminB5_mg, VitaminB6_mg,
+                    VitaminC_mg, VitaminD_mg, VitaminE_mg, VitaminK_mg, Calcium_mg, Copper_mg,
+                    Iron_mg, Magnesium_mg, Manganese_mg, Phosphorus_mg, Potassium_mg,
+                    Selenium_mg, Zinc_mg, NutritionDensity
+                ) VALUES (
+                    :ingredientName, :Calories_per_100g, :Fat_g, :SaturatedFats_g, :MonounsaturatedFats_g,
+                    :PolyunsaturatedFats_g, :Carbohydrates_g, :Sugars_g, :Protein_g, :DietaryFiber_g,
+                    :Cholesterol_mg, :Sodium_mg, :Water_g, :VitaminA_mg, :VitaminB1_mg, :VitaminB11_mg,
+                    :VitaminB12_mg, :VitaminB2_mg, :VitaminB3_mg, :VitaminB5_mg, :VitaminB6_mg,
+                    :VitaminC_mg, :VitaminD_mg, :VitaminE_mg, :VitaminK_mg, :Calcium_mg, :Copper_mg,
+                    :Iron_mg, :Magnesium_mg, :Manganese_mg, :Phosphorus_mg, :Potassium_mg,
+                    :Selenium_mg, :Zinc_mg, :NutritionDensity
+                )
+            """, ingredient_dict)
+            
+            ingredient_id = cursor.lastrowid
+            
+            # Delete from pending table
+            cursor.execute("DELETE FROM PendingIngredientItem WHERE pendingID = ?", (pending_id,))
+            
+            print(f"Ingredient approved and added to main table with ingredientID: {ingredient_id}")
+            return ingredient_id
+
+        # Handle rejection
+        elif action.lower() == "reject":
+            # Verify ingredient exists
+            cursor.execute("SELECT 1 FROM PendingIngredientItem WHERE pendingID = ?", (pending_id,))
+            if not cursor.fetchone():
+                print(f"Error: Pending ingredient with ID {pending_id} not found.")
+                return False
+                
+            # Delete from pending table
+            cursor.execute("DELETE FROM PendingIngredientItem WHERE pendingID = ?", (pending_id,))
+            
+            print(f"Ingredient with pendingID {pending_id} rejected and removed.")
+            return True
+
+        else:
+            print(f"Error: Invalid action '{action}'. Must be 'approve' or 'reject'.")
+            return None
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return None
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return None
+    except Exception as e:
+        print(f"Error in ingredient_approval_rejection: {str(e)}")
         return None
