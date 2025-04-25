@@ -9,19 +9,13 @@ connection = sqlite3.connect("nutrition.db")
 
 cursor = connection.cursor()
 
-# cursor.execute(open(r"SQL_Commands\ingredient_request_table.sql").read())
+view_table(cursor, "Recipes")
+drop_data(cursor, r"jsons\drop_data.json")
 
-
-
-
-# submit_ingredient_for_approval(cursor, r"jsons\ingredient_submission.json")
-
-
-
+view_table(cursor, "Recipes")
 
 connection.commit()
 
-# view_table(cursor, r"PendingIngredientItem")
 
 connection.close()
 
