@@ -9,10 +9,18 @@ connection = sqlite3.connect("nutrition.db")
 
 cursor = connection.cursor()
 
-view_table(cursor, "Recipes")
-drop_data(cursor, r"jsons\drop_data.json")
+view_table(cursor, "Users")
 
-view_table(cursor, "Recipes")
+view = query_user_favorites(cursor, r"jsons\query_user_favorites.json")
+print_view(cursor, view)
+
+
+drop_user_favorite(cursor, r"jsons\drop_user_favorite.json")
+
+
+view = query_user_favorites(cursor, r"jsons\query_user_favorites.json")
+print_view(cursor, view)
+
 
 connection.commit()
 

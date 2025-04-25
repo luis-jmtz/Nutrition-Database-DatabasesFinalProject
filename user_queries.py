@@ -249,3 +249,81 @@ def add_user_favorite(cursor, json_path):
         print(f"Error adding user favorite: {str(e)}")
         return False
 
+
+def drop_user_favorite(cursor, json_path):
+    try:
+        with open(json_path, 'r') as f:
+            favorite_data = json.load(f)
+
+        # Validate required fields
+        required_fields = ['userName', 'userPassword', 'type', 'itemID']
+        for field in required_fields:
+            if field not in favorite_data:
+                print(f"Error: Missing required field '{field}' in JSON file.")
+                return False
+
+        username = favorite_data['userName']
+        password = favorite_data['userPassword']
+        favorite_type = favorite_data['type'].lower()
+        item_id = favorite_data['itemID']
+
+        # Get userID from credentials
+        cursor.execute(
+            "SELECT userID FROM Users WHERE userName = ? AND userPassword = ?",
+            (username, password)
+        )
+        user = cursor.fetchone()
+        
+        if not user:
+            print("Error: Invalid username or password")
+            return False
+            
+        user_id = user[0]
+
+        if favorite_type == "ingredient":
+            # Check if favorite exists
+            cursor.execute(
+                "SELECT 1 FROM UserFavoriteIngredients WHERE userID = ? AND ingredientID = ?",
+                (user_id, item_id))
+            if not cursor.fetchone():
+                print(f"Error: Ingredient {item_id} is not in user {username}'s favorites.")
+                return False
+            
+            # Remove favorite ingredient
+            cursor.execute(
+                "DELETE FROM UserFavoriteIngredients WHERE userID = ? AND ingredientID = ?",
+                (user_id, item_id)
+            )
+            print(f"Removed ingredient {item_id} from favorites for user {username}")
+            return True
+
+        elif favorite_type == "recipe":
+            # Check if favorite exists
+            cursor.execute(
+                "SELECT 1 FROM UserFavoriteRecipes WHERE userID = ? AND recipeID = ?",
+                (user_id, item_id))
+            if not cursor.fetchone():
+                print(f"Error: Recipe {item_id} is not in user {username}'s favorites.")
+                return False
+            
+            # Remove favorite recipe
+            cursor.execute(
+                "DELETE FROM UserFavoriteRecipes WHERE userID = ? AND recipeID = ?",
+                (user_id, item_id)
+            )
+            print(f"Removed recipe {item_id} from favorites for user {username}")
+            return True
+
+        else:
+            print(f"Error: Invalid type '{favorite_type}'. Must be 'ingredient' or 'recipe'.")
+            return False
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return False
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return False
+    except Exception as e:
+        print(f"Error removing user favorite: {str(e)}")
+        return False
