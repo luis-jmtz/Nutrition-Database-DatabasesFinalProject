@@ -1,6 +1,6 @@
 import sqlite3
 from user_queries import *
-from visualization_queries import *
+from general_queries import *
 from ingredient_queries import *
 from recipe_queries import *
 from user_queries import *
