@@ -1,6 +1,6 @@
 {
-    "recipeName": "Vegetable Stir Fry4",
-    "recipeDescription": "Quick and healthy vegetable stir fry",
+    "recipeName": "test_case",
+    "recipeDescription": "test case descritpion",
     "ingredients": [
         {
             "ingredientID": 101,
@@ -13,6 +13,10 @@
         {
             "ingredientID": 310,
             "ingredientQuantity": 50
+        },
+        {
+            "ingredientID": 1,
+            "ingredientQuantity": 1
         }
     ]
 }

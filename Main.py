@@ -14,8 +14,8 @@ cursor = connection.cursor()
 # cursor.execute("UPDATE Users SET userName = TRIM(userName)")
 # connection.commit()
 
-
-# view_table(cursor, "Users")
+show_tables(cursor)
+view_table(cursor, "PendingRecipes")
 
 # view = query_user_favorites(cursor, r"jsons\query_user_favorites.json")
 # print_view(cursor, view)
@@ -29,7 +29,5 @@ cursor = connection.cursor()
 
 
 connection.commit()
-
-
 connection.close()
 

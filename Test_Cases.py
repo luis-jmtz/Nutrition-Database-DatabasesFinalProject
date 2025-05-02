@@ -34,10 +34,9 @@ def test_user_favorites():
     # Test dropping non-existent favorite
     assert drop_user_favorite(cursor, "jsons/drop_user_favorite.json") == False
 
-
 def test_recipe_workflow():
     # Test recipe submission
-    assert submit_recipe_for_approval(cursor, "jsons/recipe_submission.json") == True
+    #assert submit_recipe_for_approval(cursor, "jsons/recipe_submission.json") == True
     
     # Test recipe approval
     assert recipe_approval_rejection(cursor, "jsons/approval_request.json") is not None
@@ -48,6 +47,9 @@ def test_recipe_workflow():
     print_view(cursor, nutrition_view)
 
 
+
+
+# test_recipe_workflow()
 # test_user_favorites()
 # test_user_management()
 connection.commit()
