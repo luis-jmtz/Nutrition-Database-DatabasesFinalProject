@@ -15,7 +15,7 @@ cursor = connection.cursor()
 # connection.commit()
 
 show_tables(cursor)
-view_table(cursor, "PendingRecipes")
+view_table(cursor, "PendingIngredientItem")
 
 # view = query_user_favorites(cursor, r"jsons\query_user_favorites.json")
 # print_view(cursor, view)
