@@ -87,6 +87,81 @@ def calculate_recipe_nutrition(cursor, json_path):
         print(f"Error: {str(e)}")
         return None
 
+def query_recipe(cursor, json_path):
+    try:
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+
+        # Initialize variables for filters
+        name_filter = data.get('recipeName', '')
+        ingredient_filters = data.get('ingredientIDs', [])  # Now accepts an array
+        order = data.get('order', 0)  # 0 = no order, 1 = ASC, 2 = DESC
+
+        # Determine ORDER BY clause
+        order_clause = ""
+        if order == 1:
+            order_clause = "ORDER BY recipeName ASC"
+        elif order == 2:
+            order_clause = "ORDER BY recipeName DESC"
+
+        # Start building the query
+        query = """
+            CREATE TEMP VIEW IF NOT EXISTS RecipeQueryView AS
+            SELECT DISTINCT Recipes.*
+            FROM Recipes
+        """
+
+        # Handle multiple ingredient filters
+        if ingredient_filters:
+            if not isinstance(ingredient_filters, list):
+                ingredient_filters = [ingredient_filters]  # Convert single ID to list
+            
+            # Create a temporary table for the ingredient IDs we're filtering by
+            cursor.execute("CREATE TEMP TABLE IF NOT EXISTS TempIngredientFilters (ingredientID INTEGER)")
+            cursor.execute("DELETE FROM TempIngredientFilters")  # Clear previous values
+            
+            # Insert all ingredient IDs to filter by
+            for ing_id in ingredient_filters:
+                cursor.execute("INSERT INTO TempIngredientFilters VALUES (?)", (ing_id,))
+            
+            # Join with RecipeIngredients and count matches
+            query += """
+                JOIN (
+                    SELECT recipeID, COUNT(DISTINCT ingredientID) as matched_ingredients
+                    FROM RecipeIngredients
+                    WHERE ingredientID IN (SELECT ingredientID FROM TempIngredientFilters)
+                    GROUP BY recipeID
+                ) AS IngredientMatch ON Recipes.recipeID = IngredientMatch.recipeID
+                WHERE matched_ingredients = ?
+            """
+            # The ? will be replaced with len(ingredient_filters) to ensure all ingredients are matched
+
+        # Add name filter if provided
+        if name_filter:
+            if 'WHERE' in query:  # Already has WHERE from ingredient filter
+                query += f" AND recipeName LIKE '%{name_filter}%'"
+            else:
+                query += f" WHERE recipeName LIKE '%{name_filter}%'"
+
+        # Combine all parts of the query
+        if ingredient_filters:
+            # Execute with parameter for number of required ingredient matches
+            cursor.execute(query + " " + order_clause, (len(ingredient_filters),))
+        else:
+            cursor.execute(query + " " + order_clause)
+
+        return "RecipeQueryView"
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return None
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return None
+    except Exception as e:
+        print(f"Error in query_recipe: {str(e)}")
+        return None
+
 def submit_recipe_for_approval(cursor, json_path):
     try:
         with open(json_path, 'r') as f:  # opens and reads files
