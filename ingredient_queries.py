@@ -5,15 +5,7 @@ import os
 from user_queries import is_admin
 
 
-def query_recipes_by_ingredient(cursor, ingredient_id):
-    try:
-        
-        cursor.execute(f"CREATE TEMP VIEW IF NOT EXISTS RecipesByIngredientView AS SELECT RecipeIngredients.recipeID, Recipes.recipeName, RecipeIngredients.ingredientQuantity FROM RecipeIngredients JOIN Recipes ON RecipeIngredients.recipeID = Recipes.recipeID WHERE RecipeIngredients.ingredientID = {ingredient_id}")
-        return "RecipesByIngredientView"
-    
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return None
+
 
 def search_ingredient_name(cursor, search_text='', order=0):
     try:
