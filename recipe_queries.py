@@ -3,8 +3,17 @@ import sqlite3
 import json
 from user_queries import is_admin
 
-def calculate_recipe_nutrition(cursor, recipe_id):
+def calculate_recipe_nutrition(cursor, json_path):
     try:
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+            
+        recipe_id = data.get("recipeID")
+        
+        if not recipe_id:
+            print("Error: 'recipeID' field is required in the JSON file")
+            return None
+            
         cursor.execute(f"""
         CREATE TEMP VIEW IF NOT EXISTS RecipeNutritionView AS 
         SELECT 
@@ -58,6 +67,12 @@ def calculate_recipe_nutrition(cursor, recipe_id):
         GROUP BY Recipes.recipeID, Recipes.recipeName, Recipes.recipeDescription
         """)
         return "RecipeNutritionView"
+    except FileNotFoundError:
+        print(f"Error: File not found at {json_path}")
+        return None
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return None
     except Exception as e:
         print(f"Error: {str(e)}")
         return None
