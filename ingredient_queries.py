@@ -6,7 +6,6 @@ from user_queries import is_admin
 
 
 
-
 def search_ingredient_name(cursor, search_text='', order=0):
     try:
         # Determine the ORDER BY clause based on the order parameter
@@ -115,7 +114,6 @@ def search_ingredients(cursor, json_path, search_text='', order=0):
         print(f"Error in search_ingredients: {str(e)}")
         return None
 
-
 def submit_ingredient_for_approval(cursor, json_path):
     try:
         with open(json_path, 'r') as f:
@@ -160,7 +158,6 @@ def submit_ingredient_for_approval(cursor, json_path):
     except Exception as e:
         print(f"Error submitting ingredient for approval: {str(e)}")
         return False
-
 
 def ingredient_approval_rejection(cursor, json_path):
     try:

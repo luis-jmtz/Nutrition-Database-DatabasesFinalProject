@@ -13,7 +13,6 @@ def query_recipes_by_ingredient(cursor, ingredient_id):
         print(f"Error: {str(e)}")
         return None
 
-
 def calculate_recipe_nutrition(cursor, json_path):
     try:
         with open(json_path, 'r') as f:
@@ -88,7 +87,6 @@ def calculate_recipe_nutrition(cursor, json_path):
         print(f"Error: {str(e)}")
         return None
 
-
 def submit_recipe_for_approval(cursor, json_path):
     try:
         with open(json_path, 'r') as f:  # opens and reads files
@@ -143,7 +141,6 @@ def submit_recipe_for_approval(cursor, json_path):
         print(f"Error submitting recipe for approval: {str(e)}")
         return False
     
-
 def recipe_approval_rejection(cursor, json_path):
     
     try:
@@ -244,3 +241,4 @@ def recipe_approval_rejection(cursor, json_path):
     except Exception as e:
         print(f"Error in recipe_approval_rejection: {str(e)}")
         return None
+
